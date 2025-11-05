@@ -1,9 +1,6 @@
 name: Terraform Plan (prod)
 
 on:
-  pull_request:
-    paths:
-      - 'infra/environments/prod/**'
   workflow_dispatch: {}
 
 permissions:
@@ -14,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: infra/environments/prod
+        working-directory: infra/env/prod
     steps:
       - uses: actions/checkout@v4
 

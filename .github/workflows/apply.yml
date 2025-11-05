@@ -10,18 +10,12 @@ on:
         type: choice
         options: ["true", "false"]
 
-permissions:
-  contents: read
-
 jobs:
   apply:
     runs-on: ubuntu-latest
-    # Optional approval gate: create an Environment named "production"
-    # and add required reviewers in repo Settings → Environments.
-    environment: production
     defaults:
       run:
-        working-directory: infra/environments/prod
+        working-directory: infra/env/prod
     steps:
       - uses: actions/checkout@v4
 
