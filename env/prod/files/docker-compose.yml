@@ -1,0 +1,25 @@
+version: "3.9"
+networks: { appnet: {} }
+
+services:
+  questdb:
+    image: questdb/questdb:latest
+    container_name: questdb
+    restart: unless-stopped
+    volumes:
+      - /opt/data/questdb:/var/lib/questdb
+    networks: [appnet]
+    # ports: ["9000:9000"]   # optional admin UI
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000"]
+      interval: 20s
+      timeout: 3s
+      retries: 5
+
+  ingestor:
+    image: ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/Wad-Law/ingestor:latest
+    container_name: ingestor
+    restart: unless-stopped
+    env_file: .env
+    networks: [appnet]
+    depends_on: [questdb]
