@@ -1,0 +1,57 @@
+name: Terraform Apply (prod)
+
+on:
+  workflow_dispatch:
+    inputs:
+      auto_approve:
+        description: "Auto-approve apply?"
+        required: false
+        default: "true"
+        type: choice
+        options: ["true", "false"]
+
+permissions:
+  contents: read
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    # Optional approval gate: create an Environment named "production"
+    # and add required reviewers in repo Settings → Environments.
+    environment: production
+    defaults:
+      run:
+        working-directory: infra/environments/prod
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region:            ${{ secrets.AWS_REGION }}
+
+      - name: Terraform init
+        run: terraform init -input=false
+
+      - name: Terraform plan (save)
+        id: plan
+        env:
+          TF_VAR_region:     ${{ secrets.TF_VAR_region }}
+          TF_VAR_account_id: ${{ secrets.TF_VAR_account_id }}
+        run: terraform plan -input=false -out=tfplan.binary
+
+      - name: Terraform show (human summary)
+        run: terraform show -no-color tfplan.binary
+
+      - name: Terraform apply
+        if: ${{ github.event.inputs.auto_approve == 'true' }}
+        run: terraform apply -input=false -auto-approve tfplan.binary
+
+      - name: Terraform apply (needs prompt)
+        if: ${{ github.event.inputs.auto_approve != 'true' }}
+        run: terraform apply tfplan.binary
