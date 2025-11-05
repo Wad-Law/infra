@@ -1,4 +1,4 @@
-# Allow EC2 to assume this role
+# Allow EC2 to assume the role aws_iam_role
 data "aws_iam_policy_document" "ec2_trust" {
   statement {
     actions   = ["sts:AssumeRole"]
@@ -15,6 +15,7 @@ resource "aws_iam_role" "ec2_role" {
 }
 
 # Managed policies: SSM + ECR (pull images)
+
 # Allow EC2 to use SSM
 resource "aws_iam_role_policy_attachment" "ssm_core" {
   role       = aws_iam_role.ec2_role.name

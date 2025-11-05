@@ -5,23 +5,18 @@ set -euo pipefail
 AWS_REGION="${region}"
 ACCOUNT_ID="${account_id}"
 
-echo "[BOOTSTRAP] Starting setup for ${ACCOUNT_ID} in ${AWS_REGION}"
+echo "[BOOTSTRAP] Starting setup for $${ACCOUNT_ID} in $${AWS_REGION}"
 
-# --- Basic setup ---
-apt-get update -y
-apt-get install -y ca-certificates curl unzip jq gnupg lsb-release
-
-# --- Install Docker ---
-echo "[BOOTSTRAP] Installing Docker..."
-curl -fsSL https://get.docker.com | bash
+# AL2023 uses dnf
+dnf update -y
+dnf install -y docker
 systemctl enable --now docker
 
-# --- Install AWS CLI v2 ---
-echo "[BOOTSTRAP] Installing AWS CLI..."
-curl -s "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-unzip -q awscliv2.zip
-./aws/install
-rm -rf aws awscliv2.zip
+# Optional: ensure AWS CLI v2 present (usually preinstalled)
+if ! command -v aws >/dev/null 2>&1; then
+  curl -sSL https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o awscliv2.zip
+  unzip -q awscliv2.zip && ./aws/install && rm -rf aws awscliv2.zip
+fi
 
 # --- Setup stack directory ---
 mkdir -p /opt/stack
@@ -30,19 +25,19 @@ cd /opt/stack
 # --- Write .env file ---
 cat > .env <<EOF
 ENVIRONMENT=PROD
-ACCOUNT_ID=${ACCOUNT_ID}
-AWS_REGION=${AWS_REGION}
+ACCOUNT_ID=$${ACCOUNT_ID}
+AWS_REGION=$${AWS_REGION}
 EOF
 chmod 600 .env
 
 # --- Write docker-compose.yml and deploy.sh ---
 # heredoc in quotes because we don't want variables to expand
 cat > docker-compose.yml <<'COMPOSE'
-${file("${path.module}/files/docker-compose.yml")}
+${compose_content}
 COMPOSE
 
 cat > deploy.sh <<'DEPLOY'
-${file("${path.module}/files/deploy.sh")}
+${deploy_content}
 DEPLOY
 chmod +x deploy.sh
 

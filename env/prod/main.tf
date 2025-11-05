@@ -1,14 +1,18 @@
 locals {
+  compose_content = file("${path.module}/files/docker-compose.yml")
+  deploy_content  = file("${path.module}/files/deploy.sh")
   user_data = templatefile("${path.module}/bootstrap.sh.tpl", {
-    region     = var.region
-    account_id = var.account_id
+    region          = var.region
+    account_id      = var.account_id
+    compose_content = local.compose_content
+    deploy_content  = local.deploy_content
   })
 }
 
 # Defines what each EC2 instance looks like:
 resource "aws_launch_template" "lt" {
   name_prefix              = "${var.name_prefix}-lt-"
-  image_id                 = data.aws_ami.ubuntu_2404.id
+  image_id                 = data.aws_ssm_parameter.al2023_x86_64.value
   instance_type            = "t3.micro"
   vpc_security_group_ids   = [aws_security_group.ec2_sg.id]
   user_data                = base64encode(local.user_data)
