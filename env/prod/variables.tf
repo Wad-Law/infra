@@ -1,6 +1,6 @@
-variable "region"      { type = string }
-variable "account_id"  { type = string }
+variable "region" { type = string }
+variable "account_id" { type = string }
 variable "name_prefix" {
-    type = string
-    default = "wad-law"
+  type    = string
+  default = "wad-law"
 } 

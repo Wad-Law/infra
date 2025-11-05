@@ -1,10 +1,10 @@
 # Allow EC2 to assume the role aws_iam_role
 data "aws_iam_policy_document" "ec2_trust" {
   statement {
-    actions   = ["sts:AssumeRole"]
+    actions = ["sts:AssumeRole"]
     principals {
-        type = "Service"
-        identifiers = ["ec2.amazonaws.com"]
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
     }
   }
 }
@@ -29,7 +29,7 @@ resource "aws_iam_role_policy_attachment" "ecr_ro" {
 
 # inline policy: DescribeAvailabilityZones (for region detection via CLI) - small permissions
 resource "aws_iam_policy" "allow_describe_azs" {
-  name   = "${var.name_prefix}-allow-describe-azs"
+  name = "${var.name_prefix}-allow-describe-azs"
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [{

@@ -11,11 +11,11 @@ locals {
 
 # Defines what each EC2 instance looks like:
 resource "aws_launch_template" "lt" {
-  name_prefix              = "${var.name_prefix}-lt-"
-  image_id                 = data.aws_ssm_parameter.al2023_x86_64.value
-  instance_type            = "t3.micro"
-  vpc_security_group_ids   = [aws_security_group.ec2_sg.id]
-  user_data                = base64encode(local.user_data)
+  name_prefix            = "${var.name_prefix}-lt-"
+  image_id               = data.aws_ssm_parameter.al2023_x86_64.value
+  instance_type          = "t3.micro"
+  vpc_security_group_ids = [aws_security_group.ec2_sg.id]
+  user_data              = base64encode(local.user_data)
 
   iam_instance_profile { name = aws_iam_instance_profile.ec2_profile.name }
 
@@ -34,9 +34,9 @@ resource "aws_autoscaling_group" "asg" {
   vpc_zone_identifier = [element(data.aws_subnets.default_vpc_subnets.ids, 0)]
 
   launch_template {
-    id = aws_launch_template.lt.id
+    id      = aws_launch_template.lt.id
     version = "$Latest"
-   }
+  }
 
   health_check_type         = "EC2"
   health_check_grace_period = 60
@@ -44,8 +44,8 @@ resource "aws_autoscaling_group" "asg" {
   lifecycle { create_before_destroy = true }
 
   tag {
-    key = "Name"
-    value = "${var.name_prefix}-ec2"
+    key                 = "Name"
+    value               = "${var.name_prefix}-ec2"
     propagate_at_launch = true
   }
 }
