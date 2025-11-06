@@ -33,7 +33,7 @@ jobs:
         run: terraform init -input=false -reconfigure -backend-config=backend.hcl
 
       - name: Select workspace
-        run: terraform workspace select prod || terraform workspace new prod"
+        run: terraform workspace select prod || terraform workspace new prod
 
       - name: Terraform plan (save)
         id: plan
