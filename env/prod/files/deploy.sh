@@ -9,11 +9,11 @@ aws ecr get-login-password --region "$AWS_REGION" \
 
 
 if [ $# -eq 1 ]; then
-  docker compose pull "$1"
-  docker compose up -d "$1"
+  docker-compose pull "$1"
+  docker-compose up -d "$1"
 else
-  docker compose pull
-  docker compose up -d
+  docker-compose pull
+  docker-compose up -d
 fi
 
 docker image prune -f
