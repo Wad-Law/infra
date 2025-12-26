@@ -36,7 +36,7 @@ resource "aws_security_group" "rds_sg" {
 resource "aws_db_instance" "default" {
   identifier        = "${var.name_prefix}-db"
   engine            = "postgres"
-  engine_version    = "16.3"
+  engine_version    = "18.1"
   instance_class    = "db.t4g.micro" # Free Tier eligible (if available) or cheap
   allocated_storage = 20
   storage_type      = "gp3"
