@@ -6,6 +6,9 @@ locals {
     account_id      = var.account_id
     compose_content = local.compose_content
     deploy_content  = local.deploy_content
+    db_endpoint     = aws_db_instance.default.endpoint
+    db_username     = var.db_username
+    db_password     = var.db_password
   })
 }
 

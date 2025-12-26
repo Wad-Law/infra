@@ -2,22 +2,9 @@ version: "3.9"
 networks: { appnet: {} }
 
 services:
-  questdb:
-    image: questdb/questdb:latest
-    container_name: questdb
-    restart: unless-stopped
-    volumes:
-      - /opt/data/questdb:/var/lib/questdb
-    networks: [appnet]
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000"]
-      interval: 20s
-      timeout: 3s
-      retries: 5
-
-  ingestor:
-    image: ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/wad-law/ingestor:latest
-    container_name: ingestor
+  polymind:
+    image: ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/wad-law/polymind:latest
+    container_name: polymind
     restart: unless-stopped
     env_file: .env
     networks: [appnet]
