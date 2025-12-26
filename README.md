@@ -101,31 +101,6 @@ infra/
 │       ├── outputs.tf      # Output values (e.g., RDS Endpoint)
 │       └── bootstrap.sh.tpl # EC2 startup script
 └── ...
-```# Infra: Cloud Infrastructure for Polymind
-
-This repository contains the Terraform configuration and infrastructure-as-code (IaC) definitions required to deploy the **Polymind** trading bot environment on AWS.
-
-## 🏗 Architecture
-
-The infrastructure is designed for high availability, security, and automated deployment.
-
-```mermaid
-graph TD
-    User[User/GitHub Actions] -->|Terraform Apply| AWS[AWS Cloud]
-    subgraph cloud ["AWS VPC"]
-        subgraph public ["Public Subnet"]
-            EC2[EC2 Instance (Polymind)]
-            SG_EC2[Security Group: EC2]
-        end
-        subgraph private ["Private Subnet/RDS Subnet"]
-            RDS[RDS Postgres (Polymind DB)]
-            SG_RDS[Security Group: RDS]
-        end
-    end
-    
-    EC2 -->|Connects| RDS
-    EC2 -->|Pulls Image| ECR[Elastic Container Registry]
-    User -->|SSH (Optional)| EC2
 ```
 
 ### Key Components
