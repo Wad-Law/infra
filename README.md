@@ -11,7 +11,10 @@ graph TD
     User["User/GitHub Actions"] -->|Terraform Apply| AWS["AWS Cloud"]
     subgraph cloud ["AWS VPC"]
         subgraph public ["Public Subnet"]
-            EC2["EC2 Instance (Polymind)"]
+            subgraph instance ["EC2 Instance (t3.small)"]
+                Polymind["Polymind Container"]
+                Obs["Observability Stack<br/>(Prometheus, Grafana, ELK)"]
+            end
             SG_EC2["Security Group: EC2"]
         end
         subgraph private ["Private Subnet/RDS Subnet"]
@@ -20,9 +23,10 @@ graph TD
         end
     end
     
-    EC2 -->|Connects| RDS
-    EC2 -->|Pulls Image| ECR["Elastic Container Registry"]
-    User -->|"SSH (Optional)"| EC2
+    Polymind -->|Connects| RDS
+    Obs -->|Scrapes| Polymind
+    instance -->|Pulls Image| ECR["Elastic Container Registry"]
+    User -->|"SSH Tunnel (Metrics/Logs)"| instance
 ```
 
 ### Key Components
@@ -62,6 +66,7 @@ graph TD
 1.  **Terraform**: `v1.0+`
 2.  **AWS CLI**: Configured with appropriate credentials (`~/.aws/credentials`).
 3.  **S3 Backend**: An S3 bucket for Terraform state (configured in `backend.hcl`).
+4.  **AWS Key Pair**: An existing EC2 Key Pair (create in AWS Console) for SSH access.
 
 ### Steps to Deploy
 
@@ -74,13 +79,15 @@ graph TD
 2.  **Plan**:
     Review the changes before applying.
     ```bash
-    terraform plan -var="db_username=admin" -var="db_password=securepass"
+    ```bash
+    terraform plan -var="db_username=admin" -var="db_password=securepass" -var="key_name=my-key-pair"
+    ```
     ```
 
 3.  **Apply**:
     Provision the resources.
     ```bash
-    terraform apply -var="db_username=admin" -var="db_password=securepass"
+    terraform apply -var="db_username=admin" -var="db_password=securepass" -var="key_name=my-key-pair"
     ```
 
 ### Bootstrapping
