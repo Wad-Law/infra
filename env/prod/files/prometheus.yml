@@ -1,0 +1,9 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+scrape_configs:
+  - job_name: 'polymind'
+    static_configs:
+      - targets: ['polymind:9000']
+    metrics_path: '/metrics'

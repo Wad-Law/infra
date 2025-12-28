@@ -1,5 +1,6 @@
-version: "3.9"
-networks: { appnet: {} }
+networks:
+  polymind_net:
+    external: true
 
 services:
   polymind:
@@ -7,4 +8,5 @@ services:
     container_name: polymind
     restart: unless-stopped
     env_file: .env
-    networks: [appnet]
+    networks:
+      - polymind_net

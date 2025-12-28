@@ -28,7 +28,7 @@ graph TD
 ### Key Components
 
 *   **Compute**: 
-    *   **EC2 (t3.micro)**: Hosts the `polymind` application container.
+    *   **EC2 (t3.small)**: Hosts the `polymind` application container.
     *   **Auto Scaling Group (ASG)**: Ensures exactly one instance is running at all times (self-healing).
     *   **Launch Template**: Defines the instance configuration (AMI, Instance Type, IAM Profile, User Data).
 *   **Database**:
@@ -42,6 +42,11 @@ graph TD
 *   **Containerization**:
     *   **Docker**: The application runs as a Docker container managed by `docker-compose`.
     *   **ECR**: Stores the Docker images built by CI/CD.
+*   **Observability**:
+    *   **Prometheus**: Scrapes metrics from `polymind:9000`.
+    *   **Grafana**: Visualizes metrics (Pre-provisioned datasource).
+    *   **Elasticsearch & Kibana**: centralized logging and analysis.
+    *   **Network**: All containers run on `polymind_net` bridge network.
 
 ## 🛠 Tech Stack
 
@@ -106,7 +111,7 @@ infra/
 ### Key Components
 
 *   **Compute**: 
-    *   **EC2 (t3.micro)**: Hosts the `polymind` application container.
+    *   **EC2 (t3.small)**: Hosts the `polymind` application container.
     *   **Auto Scaling Group (ASG)**: Ensures exactly one instance is running at all times (self-healing).
     *   **Launch Template**: Defines the instance configuration (AMI, Instance Type, IAM Profile, User Data).
 *   **Database**:
@@ -163,3 +168,18 @@ The **User Data** script (`bootstrap.sh.tpl`) automatically:
 2.  Authenticates with ECR.
 3.  Pulls the latest `polymind` image.
 4.  Starts the application using `docker-compose`.
+
+## 📊 Accessing Observability Dashboards
+
+Since Grafana (port 3000) and Kibana (port 5601) are not exposed to the public internet for security, you must use an SSH tunnel to access them.
+
+Run the following command locally:
+
+```bash
+# Replace <key.pem> with your SSH key and <EC2_PUBLIC_IP> with the instance IP
+ssh -i <key.pem> -L 3000:localhost:3000 -L 5601:localhost:5601 ec2-user@<EC2_PUBLIC_IP>
+```
+
+Then visit in your browser:
+*   **Grafana**: [http://localhost:3000](http://localhost:3000) (User/Pass: `admin`/`admin`)
+*   **Kibana**: [http://localhost:5601](http://localhost:5601)

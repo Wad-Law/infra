@@ -48,6 +48,21 @@ ${deploy_content}
 DEPLOY
 chmod +x deploy.sh
 
+# --- Connectivity ---
+docker network create polymind_net || true
+
+# --- Observability Stack ---
+cat > prometheus.yml <<'PROM'
+${prom_content}
+PROM
+
+cat > docker-compose.observability.yml <<'OBS'
+${obs_compose_content}
+OBS
+
+echo "[BOOTSTRAP] Launching observability stack..."
+docker-compose -f docker-compose.observability.yml up -d
+
 # --- Initial deploy ---
 echo "[BOOTSTRAP] Running initial deploy..."
 /opt/stack/deploy.sh
