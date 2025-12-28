@@ -12,5 +12,13 @@ resource "aws_security_group" "ec2_sg" {
     ipv6_cidr_blocks = ["::/0"]
   }
 
+  # Allow SSH from anywhere (for debugging/tunneling)
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   tags = { Name = "${var.name_prefix}-sg" }
 }
