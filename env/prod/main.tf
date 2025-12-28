@@ -48,6 +48,13 @@ resource "aws_autoscaling_group" "asg" {
   health_check_type         = "EC2"
   health_check_grace_period = 60
 
+  instance_refresh {
+    strategy = "Rolling"
+    preferences {
+      min_healthy_percentage = 0 # Allow replacing the single instance
+    }
+  }
+
   lifecycle { create_before_destroy = true }
 
   tag {
