@@ -1,6 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
+# Force Refresh: Updated to t3.small
 # --- Variables from Terraform ---
 AWS_REGION="${region}"
 ACCOUNT_ID="${account_id}"
