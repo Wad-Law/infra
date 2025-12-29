@@ -83,8 +83,6 @@ graph TD
 2.  **Plan**:
     Review the changes before applying.
     ```bash
-    ```bash
-    ```bash
     terraform plan -var="db_username=admin" -var="db_password=securepass" -var="llm_api_key=sk-..." -var="key_name=my-key-pair"
     ```
 
@@ -196,3 +194,12 @@ Then visit in your browser:
     *   **Dashboard**: Go to Dashboards -> **Polymind Main**
 *   **Kibana**: [http://localhost:5601](http://localhost:5601)
 *   **Prometheus**: [http://localhost:9090](http://localhost:9090)
+
+## 🐛 Troubleshooting
+
+*   **Check Bootstrapping Logs**:
+    To see the output of the User Data script (cloud-init):
+    ```bash
+    ssh -i <key.pem> ec2-user@<EC2_PUBLIC_IP>
+    cat /var/log/cloud-init-output.log
+    ```

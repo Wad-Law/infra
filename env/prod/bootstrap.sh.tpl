@@ -90,20 +90,29 @@ aws s3 cp "s3://$${S3_BUCKET}/export.ndjson" export.ndjson
 echo "[BOOTSTRAP] Launching observability stack..."
 docker-compose -f docker-compose.observability.yml up -d
 
-# --- Wait for Kibana and Provision ---
-echo "[BOOTSTRAP] Waiting for Kibana to be ready..."
-until curl -s http://localhost:5601/api/status | grep -q '"state":"green"'; do
-  echo "  Waiting for Kibana..."
-  sleep 5
-done
-
-echo "[BOOTSTRAP] Importing Kibana Saved Objects..."
-curl -X POST "http://localhost:5601/api/saved_objects/_import?overwrite=true" \
-  -H "kbn-xsrf: true" \
-  --form file=@export.ndjson
-
-# --- Initial deploy ---
+# --- Initial deploy (App Critical Path) ---
 echo "[BOOTSTRAP] Running initial deploy..."
 /opt/stack/deploy.sh
+
+# --- Wait for Kibana and Provision (Background Task) ---
+echo "[BOOTSTRAP] Waiting for Kibana to be ready..."
+retries=0
+max_retries=100
+until curl -s http://localhost:5601/api/status | grep -q '"state":"green"'; do
+  if [ $retries -ge $max_retries ]; then
+    echo "[BOOTSTRAP] Timeout waiting for Kibana. Skipping provisioning."
+    break
+  fi
+  echo "  Waiting for Kibana... ($retries/$max_retries)"
+  sleep 5
+  retries=$((retries+1))
+done
+
+if [ $retries -lt $max_retries ]; then
+  echo "[BOOTSTRAP] Importing Kibana Saved Objects..."
+  curl -X POST "http://localhost:5601/api/saved_objects/_import?overwrite=true" \
+    -H "kbn-xsrf: true" \
+    --form file=@export.ndjson
+fi
 
 echo "[BOOTSTRAP] Completed successfully."
