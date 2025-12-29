@@ -15,6 +15,7 @@ processors:
       fields: ["message"]
       target: ""
       overwrite_keys: true
+      add_error_key: true
   - timestamp:
       field: timestamp
       layouts:
