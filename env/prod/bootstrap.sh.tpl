@@ -81,7 +81,7 @@ cat > grafana/dashboards/dashboard.yml <<'GDP'
 ${grafana_dash_prov}
 GDP
 
-cat > grafana/dashboards/polymind_overview.json <<'GDJSON'
+cat > grafana/dashboards/polymind_main.json <<'GDJSON'
 ${grafana_dash_json}
 GDJSON
 

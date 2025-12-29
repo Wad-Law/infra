@@ -12,7 +12,7 @@ locals {
     prom_content        = local.prom_content
     grafana_ds          = file("${path.module}/files/grafana/datasources/datasource.yml")
     grafana_dash_prov   = file("${path.module}/files/grafana/dashboards/dashboard.yml")
-    grafana_dash_json   = file("${path.module}/files/grafana/dashboards/polymind_overview.json")
+    grafana_dash_json   = file("${path.module}/files/grafana/dashboards/polymind_main.json")
     filebeat_content    = file("${path.module}/files/filebeat.yml")
     db_endpoint         = aws_db_instance.default.endpoint
     db_username         = var.db_username
