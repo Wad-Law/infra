@@ -25,6 +25,14 @@ resource "aws_launch_template" "lt" {
   key_name               = var.key_name
   user_data              = base64encode(local.user_data)
 
+  block_device_mappings {
+    device_name = "/dev/xvda"
+    ebs {
+      volume_size = 20
+      volume_type = "gp3"
+    }
+  }
+
   iam_instance_profile { name = aws_iam_instance_profile.ec2_profile.name }
 
   tag_specifications {
