@@ -15,6 +15,11 @@ variable "db_password" {
   sensitive = true
 }
 
+variable "llm_api_key" {
+  type      = string
+  sensitive = true
+}
+
 variable "key_name" {
   description = "The name of the SSH key pair to use for EC2 instances"
   type        = string

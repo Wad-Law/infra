@@ -8,6 +8,7 @@ ACCOUNT_ID="${account_id}"
 DB_ENDPOINT="${db_endpoint}"
 DB_USERNAME="${db_username}"
 DB_PASSWORD="${db_password}"
+LLM_API_KEY="${llm_api_key}"
 
 echo "[BOOTSTRAP] Starting setup for $${ACCOUNT_ID} in $${AWS_REGION}"
 
@@ -48,6 +49,7 @@ ENVIRONMENT=PROD
 ACCOUNT_ID=$${ACCOUNT_ID}
 AWS_REGION=$${AWS_REGION}
 DATABASE_URL=postgres://$${DB_USERNAME}:$${DB_PASSWORD}@$${DB_ENDPOINT}/polymind
+LLM_API_KEY=$${LLM_API_KEY}
 EOF
 chmod 600 .env
 

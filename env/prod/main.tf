@@ -17,6 +17,7 @@ locals {
     db_endpoint         = aws_db_instance.default.endpoint
     db_username         = var.db_username
     db_password         = var.db_password
+    llm_api_key         = var.llm_api_key
   })
 }
 
