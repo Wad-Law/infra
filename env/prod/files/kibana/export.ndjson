@@ -1,0 +1,1 @@
+{"attributes":{"title":"filebeat-*","timeFieldName":"@timestamp"},"id":"filebeat-pattern","type":"index-pattern","references":[],"migrationVersion":{"index-pattern":"7.6.0"},"namespaces":["default"]}

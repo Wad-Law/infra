@@ -49,3 +49,27 @@ resource "aws_iam_instance_profile" "ec2_profile" {
   name = "${var.name_prefix}-profile"
   role = aws_iam_role.ec2_role.name
 }
+
+# Allow EC2 to read from the config bucket
+resource "aws_iam_role_policy" "allow_s3_config_read" {
+  name = "${var.name_prefix}-allow-s3-config-read"
+  role = aws_iam_role.ec2_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject",
+          "s3:ListBucket"
+        ]
+        # Allow access to the bucket itself (for List) and objects within it (for Get)
+        Resource = [
+          "arn:aws:s3:::${var.name_prefix}-config-${var.account_id}",
+          "arn:aws:s3:::${var.name_prefix}-config-${var.account_id}/*"
+        ]
+      }
+    ]
+  })
+}

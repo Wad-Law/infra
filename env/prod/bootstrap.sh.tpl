@@ -84,8 +84,23 @@ aws s3 cp "s3://$${S3_BUCKET}/polymind_main.json" grafana/dashboards/polymind_ma
 aws s3 cp "s3://$${S3_BUCKET}/filebeat.yml" filebeat.yml
 aws s3 cp "s3://$${S3_BUCKET}/docker-compose.observability.yml" docker-compose.observability.yml
 
+aws s3 cp "s3://$${S3_BUCKET}/docker-compose.observability.yml" docker-compose.observability.yml
+aws s3 cp "s3://$${S3_BUCKET}/export.ndjson" export.ndjson
+
 echo "[BOOTSTRAP] Launching observability stack..."
 docker-compose -f docker-compose.observability.yml up -d
+
+# --- Wait for Kibana and Provision ---
+echo "[BOOTSTRAP] Waiting for Kibana to be ready..."
+until curl -s http://localhost:5601/api/status | grep -q '"state":"green"'; do
+  echo "  Waiting for Kibana..."
+  sleep 5
+done
+
+echo "[BOOTSTRAP] Importing Kibana Saved Objects..."
+curl -X POST "http://localhost:5601/api/saved_objects/_import?overwrite=true" \
+  -H "kbn-xsrf: true" \
+  --form file=@export.ndjson
 
 # --- Initial deploy ---
 echo "[BOOTSTRAP] Running initial deploy..."

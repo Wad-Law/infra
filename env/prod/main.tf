@@ -62,6 +62,13 @@ resource "aws_s3_object" "grafana_dash_json" {
   etag   = filemd5("${path.module}/files/grafana/dashboards/polymind_main.json")
 }
 
+resource "aws_s3_object" "kibana_export" {
+  bucket = aws_s3_bucket.config_bucket.id
+  key    = "export.ndjson"
+  source = "${path.module}/files/kibana/export.ndjson"
+  etag   = filemd5("${path.module}/files/kibana/export.ndjson")
+}
+
 # Defines what each EC2 instance looks like:
 resource "aws_launch_template" "lt" {
   name_prefix            = "${var.name_prefix}-lt-"
