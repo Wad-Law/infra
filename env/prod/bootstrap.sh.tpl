@@ -84,7 +84,7 @@ aws s3 cp "s3://$${S3_BUCKET}/polymind_main.json" grafana/dashboards/polymind_ma
 aws s3 cp "s3://$${S3_BUCKET}/filebeat.yml" filebeat.yml
 aws s3 cp "s3://$${S3_BUCKET}/docker-compose.observability.yml" docker-compose.observability.yml
 
-aws s3 cp "s3://$${S3_BUCKET}/docker-compose.observability.yml" docker-compose.observability.yml
+
 aws s3 cp "s3://$${S3_BUCKET}/export.ndjson" export.ndjson
 
 echo "[BOOTSTRAP] Launching observability stack..."
@@ -94,25 +94,37 @@ docker-compose -f docker-compose.observability.yml up -d
 echo "[BOOTSTRAP] Running initial deploy..."
 /opt/stack/deploy.sh
 
-# --- Wait for Kibana and Provision (Background Task) ---
-echo "[BOOTSTRAP] Waiting for Kibana to be ready..."
+# --- Create Provisioning Script ---
+cat > provision_kibana.sh <<'EOF'
+#!/bin/bash
+echo "[PROVISION] Waiting for Kibana to be ready..."
 retries=0
-max_retries=100
-until curl -s http://localhost:5601/api/status | grep -q '"state":"green"'; do
+max_retries=120
+# Sleep initial 20s to allow process start
+sleep 20
+
+until curl -s --max-time 10 http://localhost:5601/api/status | grep -q '"state":"green"'; do
   if [ $retries -ge $max_retries ]; then
-    echo "[BOOTSTRAP] Timeout waiting for Kibana. Skipping provisioning."
-    break
+    echo "[PROVISION] Timeout waiting for Kibana. Skipping provisioning."
+    exit 1
   fi
   echo "  Waiting for Kibana... ($retries/$max_retries)"
   sleep 5
   retries=$((retries+1))
 done
 
-if [ $retries -lt $max_retries ]; then
-  echo "[BOOTSTRAP] Importing Kibana Saved Objects..."
-  curl -X POST "http://localhost:5601/api/saved_objects/_import?overwrite=true" \
-    -H "kbn-xsrf: true" \
-    --form file=@export.ndjson
-fi
+echo "[PROVISION] Importing Kibana Saved Objects..."
+# Sleep to ensure API is fully accepting writes
+sleep 10
+curl -X POST "http://localhost:5601/api/saved_objects/_import?overwrite=true" \
+  -H "kbn-xsrf: true" \
+  --form file=@export.ndjson
+echo "[PROVISION] Provisioning complete."
+EOF
+chmod +x provision_kibana.sh
+
+# --- Execute Provisioning in Background ---
+echo "[BOOTSTRAP] Launching Kibana provisioning in background..."
+nohup ./provision_kibana.sh > provision.log 2>&1 &
 
 echo "[BOOTSTRAP] Completed successfully."

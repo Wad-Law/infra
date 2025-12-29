@@ -203,3 +203,12 @@ Then visit in your browser:
     ssh -i <key.pem> ec2-user@<EC2_PUBLIC_IP>
     cat /var/log/cloud-init-output.log
     ```
+
+*   **Manual Kibana Provisioning**:
+    If the dashboard or index pattern is missing, you can re-run the provisioning script manually:
+    ```bash
+    cd /opt/stack
+    ./provision_kibana.sh
+    # Check logs
+    cat provision.log
+    ```
