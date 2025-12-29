@@ -49,6 +49,8 @@ services:
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - xpack.security.enabled=false
+      - xpack.ml.enabled=false
+      - indices.recovery.max_bytes_per_sec=50mb
     ulimits:
       memlock:
         soft: -1
@@ -68,6 +70,8 @@ services:
       - "5601:5601"
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - XPACK_MONITORING_ENABLED=false
+      - XPACK_REPORTING_ENABLED=false
     networks:
       - polymind_net
     depends_on:
