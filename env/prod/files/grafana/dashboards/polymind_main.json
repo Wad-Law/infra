@@ -272,6 +272,74 @@
             "type": "timeseries"
         },
         {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "Prometheus"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "custom": {
+                        "drawStyle": "line"
+                    },
+                    "unit": "short"
+                }
+            },
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 16
+            },
+            "id": 10,
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "Prometheus"
+                    },
+                    "expr": "rate(strategy_news_processed_total[5m])",
+                    "legendFormat": "News Processed",
+                    "refId": "A"
+                }
+            ],
+            "title": "News Ingestion Rate",
+            "type": "timeseries"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "Prometheus"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "custom": {
+                        "drawStyle": "line"
+                    },
+                    "unit": "short"
+                }
+            },
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 16
+            },
+            "id": 11,
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "Prometheus"
+                    },
+                    "expr": "rate(strategy_candidates_found_total[5m])",
+                    "legendFormat": "Candidates",
+                    "refId": "A"
+                }
+            ],
+            "title": "Candidates Found Rate",
+            "type": "timeseries"
+        },
+        {
             "gridPos": {
                 "h": 1,
                 "w": 24,
@@ -280,6 +348,17 @@
             },
             "id": 6,
             "title": "System Resources",
+            "type": "row"
+        },
+        {
+            "gridPos": {
+                "h": 1,
+                "w": 24,
+                "x": 0,
+                "y": 24
+            },
+            "id": 12,
+            "title": "Business Metrics",
             "type": "row"
         },
         {
@@ -303,15 +382,14 @@
                 "y": 17
             },
             "id": 7,
+            "type": "timeseries",
             "targets": [
                 {
-                    "expr": "rate(process_cpu_seconds_total[1m]) * 100",
-                    "legendFormat": "CPU Usage",
+                    "expr": "process_cpu_usage_ratio",
+                    "legendFormat": "CPU Usage (%)",
                     "refId": "A"
                 }
-            ],
-            "title": "CPU Usage",
-            "type": "timeseries"
+            ]
         },
         {
             "datasource": {
@@ -363,14 +441,99 @@
                 "y": 17
             },
             "id": 9,
+            "title": "Process Heartbeat (Hz)",
+            "type": "timeseries",
             "targets": [
                 {
-                    "expr": "process_open_fds",
-                    "legendFormat": "Open FDs",
+                    "expr": "rate(process_collector_heartbeat[1m])",
+                    "legendFormat": "Heartbeat",
                     "refId": "A"
                 }
+            ]
+        },
+        {
+            "gridPos": {
+                "h": 1,
+                "w": 24,
+                "x": 0,
+                "y": 32
+            },
+            "id": 13,
+            "title": "Strategy Performance",
+            "type": "row"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "Prometheus"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "custom": {
+                        "drawStyle": "line"
+                    },
+                    "unit": "s"
+                }
+            },
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 33
+            },
+            "id": 14,
+            "targets": [
+                {
+                    "expr": "histogram_quantile(0.95, sum(rate(strategy_analyst_duration_seconds_bucket[5m])) by (le))",
+                    "legendFormat": "Analyst Latency (P95)",
+                    "refId": "A"
+                },
+                {
+                    "expr": "histogram_quantile(0.95, sum(rate(strategy_processing_duration_seconds_bucket[5m])) by (le))",
+                    "legendFormat": "Total Pipeline Latency (P95)",
+                    "refId": "B"
+                }
             ],
-            "title": "File Descriptors",
+            "title": "Strategy Latency (P95)",
+            "type": "timeseries"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "Prometheus"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "custom": {
+                        "drawStyle": "bars",
+                        "stacking": {
+                            "mode": "normal",
+                            "group": "A"
+                        }
+                    },
+                    "unit": "short"
+                }
+            },
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 33
+            },
+            "id": 15,
+            "targets": [
+                {
+                    "expr": "rate(strategy_orders_generated_total[5m])",
+                    "legendFormat": "Orders Generated",
+                    "refId": "A"
+                },
+                {
+                    "expr": "rate(execution_orders_filled_total[5m])",
+                    "legendFormat": "Orders Filled",
+                    "refId": "B"
+                }
+            ],
+            "title": "Order Throughput",
             "type": "timeseries"
         }
     ],

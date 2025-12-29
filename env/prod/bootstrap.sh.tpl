@@ -103,7 +103,7 @@ max_retries=120
 # Sleep initial 20s to allow process start
 sleep 20
 
-until curl -s --max-time 10 http://localhost:5601/api/status | grep -E '"state":"(green|yellow)"'; do
+until curl -s --max-time 10 http://localhost:5601/api/status | grep -q '"level":"available"'; do
   if [ $retries -ge $max_retries ]; then
     echo "[PROVISION] Timeout waiting for Kibana. Last status:"
     curl -s --max-time 5 http://localhost:5601/api/status || echo "Unreachable"
