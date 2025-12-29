@@ -70,6 +70,21 @@ cat > prometheus.yml <<'PROM'
 ${prom_content}
 PROM
 
+# --- Grafana Provisioning ---
+mkdir -p grafana/datasources grafana/dashboards
+
+cat > grafana/datasources/datasource.yml <<'GDS'
+${grafana_ds}
+GDS
+
+cat > grafana/dashboards/dashboard.yml <<'GDP'
+${grafana_dash_prov}
+GDP
+
+cat > grafana/dashboards/polymind_overview.json <<'GDJSON'
+${grafana_dash_json}
+GDJSON
+
 cat > docker-compose.observability.yml <<'OBS'
 ${obs_compose_content}
 OBS
