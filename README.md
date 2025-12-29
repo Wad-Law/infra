@@ -11,7 +11,7 @@ graph TD
     User["User/GitHub Actions"] -->|Terraform Apply| AWS["AWS Cloud"]
     subgraph cloud ["AWS VPC"]
         subgraph public ["Public Subnet"]
-            subgraph instance ["EC2 Instance (t3.small)"]
+            subgraph instance ["EC2 Instance (t3.medium)"]
                 Polymind["Polymind Container"]
                 Obs["Observability Stack<br/>(Prometheus, Grafana, ELK)"]
             end

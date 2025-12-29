@@ -73,7 +73,7 @@ resource "aws_s3_object" "kibana_export" {
 resource "aws_launch_template" "lt" {
   name_prefix            = "${var.name_prefix}-lt-"
   image_id               = data.aws_ssm_parameter.al2023_x86_64.value
-  instance_type          = "t3.small"
+  instance_type          = "t3.medium"
   vpc_security_group_ids = [aws_security_group.ec2_sg.id]
   key_name               = var.key_name
   user_data              = base64encode(local.user_data)
