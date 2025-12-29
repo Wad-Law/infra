@@ -71,6 +71,20 @@ services:
       - elasticsearch
     restart: unless-stopped
 
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:8.11.1
+    user: root
+    command: filebeat -e -strict.perms=false
+    volumes:
+      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - polymind_net
+    depends_on:
+      - elasticsearch
+    restart: unless-stopped
+
 networks:
   polymind_net:
     external: true
@@ -79,3 +93,4 @@ volumes:
   prometheus_data:
   grafana_data:
   elasticsearch_data:
+

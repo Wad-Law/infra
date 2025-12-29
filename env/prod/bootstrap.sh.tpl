@@ -85,7 +85,12 @@ cat > grafana/dashboards/polymind_overview.json <<'GDJSON'
 ${grafana_dash_json}
 GDJSON
 
+cat > filebeat.yml <<'FB'
+${filebeat_content}
+FB
+
 cat > docker-compose.observability.yml <<'OBS'
+
 ${obs_compose_content}
 OBS
 
