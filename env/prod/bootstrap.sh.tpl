@@ -14,6 +14,19 @@ echo "[BOOTSTRAP] Starting setup for $${ACCOUNT_ID} in $${AWS_REGION}"
 # AL2023 uses dnf
 dnf update -y
 dnf install -y docker
+# --- System Configuration ---
+# Fix for Elasticsearch "max virtual memory areas vm.max_map_count [65530] is too low"
+sysctl -w vm.max_map_count=262144
+echo "vm.max_map_count=262144" > /etc/sysctl.d/elasticsearch.conf
+
+# Add 2GB Swap for t3.small/medium buffer
+dd if=/dev/zero of=/swapfile bs=128M count=16
+chmod 600 /swapfile
+mkswap /swapfile
+swapon /swapfile
+echo "/swapfile swap swap defaults 0 0" >> /etc/fstab
+
+# --- Docker Setup ---
 systemctl enable --now docker
 
 sudo curl -L https://github.com/docker/compose/releases/download/v2.29.7/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose

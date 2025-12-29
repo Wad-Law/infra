@@ -184,9 +184,10 @@ Run the following command locally:
 
 ```bash
 # Replace <key.pem> with your SSH key and <EC2_PUBLIC_IP> with the instance IP
-ssh -i <key.pem> -L 3000:localhost:3000 -L 5601:localhost:5601 ec2-user@<EC2_PUBLIC_IP>
+ssh -i <key.pem> -L 3000:localhost:3000 -L 5601:localhost:5601 -L 9090:localhost:9090 ec2-user@<EC2_PUBLIC_IP>
 ```
 
 Then visit in your browser:
 *   **Grafana**: [http://localhost:3000](http://localhost:3000) (User/Pass: `admin`/`admin`)
 *   **Kibana**: [http://localhost:5601](http://localhost:5601)
+*   **Prometheus**: [http://localhost:9090](http://localhost:9090)
