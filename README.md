@@ -26,6 +26,7 @@ graph TD
     Polymind -->|Connects| RDS
     Obs -->|Scrapes| Polymind
     instance -->|Pulls Image| ECR["Elastic Container Registry"]
+    instance -->|Pulls Configs| S3Bucket["S3 Config Bucket"]
     User -->|"SSH Tunnel (Metrics/Logs)"| instance
 ```
 
@@ -35,6 +36,9 @@ graph TD
     *   **EC2 (t3.small)**: Hosts the `polymind` application container.
     *   **Auto Scaling Group (ASG)**: Ensures exactly one instance is running at all times (self-healing).
     *   **Launch Template**: Defines the instance configuration (AMI, Instance Type, IAM Profile, User Data).
+*   **Storage & Config**:
+    *   **S3 Config Bucket**: centralized storage for configuration files (Docker Compose, Prometheus, Grafana Dashboards) to bypass User Data size limits.
+    *   **Security Secrets**: Secrets (`DB_PASSWORD`, `LLM_API_KEY`) are passed from GitHub Secrets to Terraform to the instance via secure environment variables.
 *   **Database**:
     *   **Amazon RDS (PostgreSQL 16)**: Managed relational database for persistent storage (Events, Signals, Orders, Positions).
     *   **Storage**: gp3 EBS volumes.
@@ -80,14 +84,14 @@ graph TD
     Review the changes before applying.
     ```bash
     ```bash
-    terraform plan -var="db_username=admin" -var="db_password=securepass" -var="key_name=my-key-pair"
-    ```
+    ```bash
+    terraform plan -var="db_username=admin" -var="db_password=securepass" -var="llm_api_key=sk-..." -var="key_name=my-key-pair"
     ```
 
 3.  **Apply**:
     Provision the resources.
     ```bash
-    terraform apply -var="db_username=admin" -var="db_password=securepass" -var="key_name=my-key-pair"
+    terraform apply -var="db_username=admin" -var="db_password=securepass" -var="llm_api_key=sk-..." -var="key_name=my-key-pair"
     ```
 
 ### Bootstrapping
@@ -159,13 +163,13 @@ infra/
 2.  **Plan**:
     Review the changes before applying.
     ```bash
-    terraform plan -var="db_username=admin" -var="db_password=securepass"
+    terraform plan -var="db_username=admin" -var="db_password=securepass" -var="llm_api_key=sk-..." -var="key_name=my-key-pair"
     ```
 
 3.  **Apply**:
     Provision the resources.
     ```bash
-    terraform apply -var="db_username=admin" -var="db_password=securepass"
+    terraform apply -var="db_username=admin" -var="db_password=securepass" -var="llm_api_key=sk-..." -var="key_name=my-key-pair"
     ```
 
 ### Bootstrapping
@@ -189,5 +193,6 @@ ssh -i <key.pem> -L 3000:localhost:3000 -L 5601:localhost:5601 -L 9090:localhost
 
 Then visit in your browser:
 *   **Grafana**: [http://localhost:3000](http://localhost:3000) (User/Pass: `admin`/`admin`)
+    *   **Dashboard**: Go to Dashboards -> **Polymind Main**
 *   **Kibana**: [http://localhost:5601](http://localhost:5601)
 *   **Prometheus**: [http://localhost:9090](http://localhost:9090)

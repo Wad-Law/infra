@@ -1,17 +1,17 @@
 
 locals {
-  compose_content     = file("${path.module}/files/docker-compose.yml")
-  deploy_content      = file("${path.module}/files/deploy.sh")
+  compose_content = file("${path.module}/files/docker-compose.yml")
+  deploy_content  = file("${path.module}/files/deploy.sh")
   user_data = templatefile("${path.module}/bootstrap.sh.tpl", {
-    region              = var.region
-    account_id          = var.account_id
-    compose_content     = local.compose_content
-    deploy_content      = local.deploy_content
-    db_endpoint         = aws_db_instance.default.endpoint
-    db_username         = var.db_username
-    db_password         = var.db_password
-    llm_api_key         = var.llm_api_key
-    s3_bucket_id        = aws_s3_bucket.config_bucket.id
+    region          = var.region
+    account_id      = var.account_id
+    compose_content = local.compose_content
+    deploy_content  = local.deploy_content
+    db_endpoint     = aws_db_instance.default.endpoint
+    db_username     = var.db_username
+    db_password     = var.db_password
+    llm_api_key     = var.llm_api_key
+    s3_bucket_id    = aws_s3_bucket.config_bucket.id
   })
 }
 
