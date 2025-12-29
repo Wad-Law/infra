@@ -70,19 +70,19 @@ docker network create polymind_net || true
 S3_BUCKET="${s3_bucket_id}"
 
 # --- Observability Stack (S3 Download) ---
-echo "[BOOTSTRAP] Downloading config from S3://${S3_BUCKET}..."
+echo "[BOOTSTRAP] Downloading config from S3://$${S3_BUCKET}..."
 
-aws s3 cp "s3://${S3_BUCKET}/prometheus.yml" prometheus.yml
+aws s3 cp "s3://$${S3_BUCKET}/prometheus.yml" prometheus.yml
 
 # --- Grafana Provisioning ---
 mkdir -p grafana/datasources grafana/dashboards
 
-aws s3 cp "s3://${S3_BUCKET}/datasource.yml" grafana/datasources/datasource.yml
-aws s3 cp "s3://${S3_BUCKET}/dashboard.yml" grafana/dashboards/dashboard.yml
-aws s3 cp "s3://${S3_BUCKET}/polymind_main.json" grafana/dashboards/polymind_main.json
+aws s3 cp "s3://$${S3_BUCKET}/datasource.yml" grafana/datasources/datasource.yml
+aws s3 cp "s3://$${S3_BUCKET}/dashboard.yml" grafana/dashboards/dashboard.yml
+aws s3 cp "s3://$${S3_BUCKET}/polymind_main.json" grafana/dashboards/polymind_main.json
 
-aws s3 cp "s3://${S3_BUCKET}/filebeat.yml" filebeat.yml
-aws s3 cp "s3://${S3_BUCKET}/docker-compose.observability.yml" docker-compose.observability.yml
+aws s3 cp "s3://$${S3_BUCKET}/filebeat.yml" filebeat.yml
+aws s3 cp "s3://$${S3_BUCKET}/docker-compose.observability.yml" docker-compose.observability.yml
 
 echo "[BOOTSTRAP] Launching observability stack..."
 docker-compose -f docker-compose.observability.yml up -d
