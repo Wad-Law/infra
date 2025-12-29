@@ -50,6 +50,10 @@ services:
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - xpack.security.enabled=false
       - xpack.ml.enabled=false
+      - xpack.watcher.enabled=false
+      - xpack.graph.enabled=false
+      - xpack.transform.enabled=false
+      - xpack.monitoring.enabled=false
       - indices.recovery.max_bytes_per_sec=50mb
     ulimits:
       memlock:
