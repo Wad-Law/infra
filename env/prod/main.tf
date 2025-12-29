@@ -1,24 +1,65 @@
+
 locals {
   compose_content     = file("${path.module}/files/docker-compose.yml")
   deploy_content      = file("${path.module}/files/deploy.sh")
-  obs_compose_content = file("${path.module}/files/docker-compose.observability.yml")
-  prom_content        = file("${path.module}/files/prometheus.yml")
   user_data = templatefile("${path.module}/bootstrap.sh.tpl", {
     region              = var.region
     account_id          = var.account_id
     compose_content     = local.compose_content
     deploy_content      = local.deploy_content
-    obs_compose_content = local.obs_compose_content
-    prom_content        = local.prom_content
-    grafana_ds          = file("${path.module}/files/grafana/datasources/datasource.yml")
-    grafana_dash_prov   = file("${path.module}/files/grafana/dashboards/dashboard.yml")
-    grafana_dash_json   = file("${path.module}/files/grafana/dashboards/polymind_main.json")
-    filebeat_content    = file("${path.module}/files/filebeat.yml")
     db_endpoint         = aws_db_instance.default.endpoint
     db_username         = var.db_username
     db_password         = var.db_password
     llm_api_key         = var.llm_api_key
+    s3_bucket_id        = aws_s3_bucket.config_bucket.id
   })
+}
+
+# --- S3 Configuration Bucket ---
+resource "aws_s3_bucket" "config_bucket" {
+  bucket = "${var.name_prefix}-config-${var.account_id}"
+}
+
+resource "aws_s3_object" "obs_compose" {
+  bucket = aws_s3_bucket.config_bucket.id
+  key    = "docker-compose.observability.yml"
+  source = "${path.module}/files/docker-compose.observability.yml"
+  etag   = filemd5("${path.module}/files/docker-compose.observability.yml")
+}
+
+resource "aws_s3_object" "prometheus" {
+  bucket = aws_s3_bucket.config_bucket.id
+  key    = "prometheus.yml"
+  source = "${path.module}/files/prometheus.yml"
+  etag   = filemd5("${path.module}/files/prometheus.yml")
+}
+
+resource "aws_s3_object" "filebeat" {
+  bucket = aws_s3_bucket.config_bucket.id
+  key    = "filebeat.yml"
+  source = "${path.module}/files/filebeat.yml"
+  etag   = filemd5("${path.module}/files/filebeat.yml")
+}
+
+resource "aws_s3_object" "grafana_ds" {
+  bucket = aws_s3_bucket.config_bucket.id
+  key    = "datasource.yml"
+  source = "${path.module}/files/grafana/datasources/datasource.yml"
+  etag   = filemd5("${path.module}/files/grafana/datasources/datasource.yml")
+}
+
+resource "aws_s3_object" "grafana_dash_prov" {
+  bucket = aws_s3_bucket.config_bucket.id
+  key    = "dashboard.yml"
+  source = "${path.module}/files/grafana/dashboards/dashboard.yml"
+  etag   = filemd5("${path.module}/files/grafana/dashboards/dashboard.yml")
+}
+
+resource "aws_s3_object" "grafana_dash_json" {
+  bucket = aws_s3_bucket.config_bucket.id
+  key    = "polymind_main.json"
+  source = "${path.module}/files/grafana/dashboards/polymind_main.json"
+  etag   = filemd5("${path.module}/files/grafana/dashboards/polymind_main.json")
 }
 
 # Defines what each EC2 instance looks like:
