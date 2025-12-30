@@ -20,6 +20,21 @@ variable "llm_api_key" {
   sensitive = true
 }
 
+variable "poly_api_key" {
+  type      = string
+  sensitive = true
+}
+
+variable "poly_api_secret" {
+  type      = string
+  sensitive = true
+}
+
+variable "poly_passphrase" {
+  type      = string
+  sensitive = true
+}
+
 variable "key_name" {
   description = "The name of the SSH key pair to use for EC2 instances"
   type        = string

@@ -11,6 +11,9 @@ locals {
     db_username     = var.db_username
     db_password     = var.db_password
     llm_api_key     = var.llm_api_key
+    poly_api_key    = var.poly_api_key
+    poly_api_secret = var.poly_api_secret
+    poly_passphrase = var.poly_passphrase
     s3_bucket_id    = aws_s3_bucket.config_bucket.id
   })
 }
