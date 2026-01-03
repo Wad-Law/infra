@@ -20,17 +20,12 @@ variable "llm_api_key" {
   sensitive = true
 }
 
-variable "poly_api_key" {
+variable "poly_proxy_address" {
   type      = string
   sensitive = true
 }
 
-variable "poly_api_secret" {
-  type      = string
-  sensitive = true
-}
-
-variable "poly_passphrase" {
+variable "poly_private_key" {
   type      = string
   sensitive = true
 }

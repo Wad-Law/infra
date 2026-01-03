@@ -44,9 +44,8 @@ jobs:
           TF_VAR_db_password: ${{ secrets.TF_VAR_db_password }}
           TF_VAR_key_name: ${{ secrets.TF_VAR_key_name }}
           TF_VAR_llm_api_key: ${{ secrets.TF_VAR_llm_api_key }}
-          TF_VAR_poly_api_key: ${{ secrets.TF_VAR_poly_api_key }}
-          TF_VAR_poly_api_secret: ${{ secrets.TF_VAR_poly_api_secret }}
-          TF_VAR_poly_passphrase: ${{ secrets.TF_VAR_poly_passphrase }}
+          TF_VAR_poly_proxy_address: ${{ secrets.TF_VAR_poly_proxy_address }}
+          TF_VAR_poly_private_key: ${{ secrets.TF_VAR_poly_private_key }}
         run: terraform plan -input=false -out=tfplan.binary
 
       - name: Terraform show (human summary)
