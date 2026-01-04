@@ -106,6 +106,12 @@ resource "aws_iam_role" "sweden_role" {
   })
 }
 
+resource "aws_iam_role_policy_attachment" "sweden_ssm_core" {
+  provider   = aws.sweden
+  role       = aws_iam_role.sweden_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
 resource "aws_iam_role_policy" "sweden_ssm_policy" {
   name = "${var.name_prefix}-sweden-ssm-policy"
   role = aws_iam_role.sweden_role.id
