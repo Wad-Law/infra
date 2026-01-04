@@ -146,10 +146,10 @@ sysctl -p
 
 # Helper functions
 get_ssm() {
-    aws ssm get-parameter --region ${AWS_REGION} --name "$1" --query "Parameter.Value" --output text
+    aws ssm get-parameter --region $${AWS_REGION} --name "$1" --query "Parameter.Value" --output text
 }
 put_ssm() {
-    aws ssm put-parameter --region ${AWS_REGION} --name "$1" --value "$2" --type String --overwrite
+    aws ssm put-parameter --region $${AWS_REGION} --name "$1" --value "$2" --type String --overwrite
 }
 
 # Generate Local Keys
@@ -161,7 +161,7 @@ PRIVATE_KEY=$(cat privatekey)
 PUBLIC_KEY=$(cat publickey)
 
 # Publish my key for Sweden to see
-put_ssm "/${bn_name_prefix}/paris/public_key" "$PUBLIC_KEY"
+put_ssm "/$${bn_name_prefix}/paris/public_key" "$PUBLIC_KEY"
 
 # Wait for Sweden endpoint
 echo "Waiting for Sweden Exit Node..."
@@ -171,8 +171,8 @@ MAX_RETRIES=30
 count=0
 
 while [ $count -lt $MAX_RETRIES ]; do
-    SWEDEN_ENDPOINT=$(get_ssm "/${bn_name_prefix}/sweden/endpoint" || echo "NONE")
-    SWEDEN_PUB_KEY=$(get_ssm "/${bn_name_prefix}/sweden/public_key" || echo "NONE")
+    SWEDEN_ENDPOINT=$(get_ssm "/$${bn_name_prefix}/sweden/endpoint" || echo "NONE")
+    SWEDEN_PUB_KEY=$(get_ssm "/$${bn_name_prefix}/sweden/public_key" || echo "NONE")
 
     if [ "$SWEDEN_ENDPOINT" != "NONE" ] && [ "$SWEDEN_PUB_KEY" != "NONE" ]; then
         break
