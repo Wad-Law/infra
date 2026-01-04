@@ -12,3 +12,8 @@ terraform {
 provider "aws" {
   region = var.region
 }
+
+provider "aws" {
+  alias  = "sweden"
+  region = "eu-north-1"
+}
