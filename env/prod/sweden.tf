@@ -1,3 +1,8 @@
+provider "aws" {
+  alias  = "sweden"
+  region = var.sweden_region
+}
+
 # --- SSH Key for Sweden (generated on the fly) ---
 resource "tls_private_key" "sweden_ssh_key" {
   algorithm = "RSA"
