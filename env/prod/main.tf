@@ -74,7 +74,7 @@ resource "aws_s3_object" "kibana_export" {
 # Defines what each EC2 instance looks like:
 resource "aws_launch_template" "lt" {
   name_prefix            = "${var.name_prefix}-lt-"
-  image_id               = data.aws_ssm_parameter.al2023_x86_64.value
+  image_id               = data.aws_ami.al2023_x86_64.id
   instance_type          = "t3.medium"
   vpc_security_group_ids = [aws_security_group.ec2_sg.id]
   key_name               = var.key_name

@@ -35,7 +35,4 @@ variable "key_name" {
   type        = string
 }
 
-variable "sweden_region" {
-  type    = string
-  default = "eu-north-1"
-} 
+ 

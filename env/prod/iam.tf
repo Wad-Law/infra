@@ -74,26 +74,4 @@ resource "aws_iam_role_policy" "allow_s3_config_read" {
   })
 }
 
-# Allow EC2 to read/write SSM parameters for WireGuard key exchange
-resource "aws_iam_role_policy" "allow_ssm_tunnel_config" {
-  name = "${var.name_prefix}-allow-ssm-tunnel-config"
-  role = aws_iam_role.ec2_role.id
 
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "ssm:GetParameter",
-          "ssm:GetParameters",
-          "ssm:PutParameter"
-        ]
-        Resource = [
-          "arn:aws:ssm:*:*:parameter/${var.name_prefix}/sweden/*",
-          "arn:aws:ssm:*:*:parameter/${var.name_prefix}/paris/*"
-        ]
-      }
-    ]
-  })
-}
