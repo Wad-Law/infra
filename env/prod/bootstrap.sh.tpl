@@ -11,6 +11,9 @@ DB_PASSWORD="${db_password}"
 LLM_API_KEY="${llm_api_key}"
 POLY_PROXY_ADDRESS="${poly_proxy_address}"
 POLY_PRIVATE_KEY="${poly_private_key}"
+POLY_API_KEY="${poly_api_key}"
+POLY_API_SECRET="${poly_api_secret}"
+POLY_API_PASSPHRASE="${poly_api_passphrase}"
 
 echo "[BOOTSTRAP] Starting setup for $${ACCOUNT_ID} in $${AWS_REGION}"
 
@@ -54,6 +57,9 @@ DATABASE_URL=postgres://$${DB_USERNAME}:$${DB_PASSWORD}@$${DB_ENDPOINT}/polymind
 LLM_API_KEY=$${LLM_API_KEY}
 POLY_PROXY_ADDRESS=$${POLY_PROXY_ADDRESS}
 POLY_PRIVATE_KEY=$${POLY_PRIVATE_KEY}
+POLY_API_KEY=$${POLY_API_KEY}
+POLY_API_SECRET=$${POLY_API_SECRET}
+POLY_API_PASSPHRASE=$${POLY_API_PASSPHRASE}
 EOF
 chmod 600 .env
 
