@@ -33,4 +33,9 @@ variable "poly_private_key" {
 variable "key_name" {
   description = "The name of the SSH key pair to use for EC2 instances"
   type        = string
+}
+
+variable "sweden_region" {
+  type    = string
+  default = "eu-north-1"
 } 
