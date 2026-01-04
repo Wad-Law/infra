@@ -1,12 +1,28 @@
-provider "aws" {
-  alias  = "sweden"
-  region = var.sweden_region
+# --- SSH Key for Sweden (generated on the fly) ---
+resource "tls_private_key" "sweden_ssh_key" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "aws_key_pair" "sweden_key_pair" {
+  provider   = aws.sweden
+  key_name   = "${var.name_prefix}-sweden-key"
+  public_key = tls_private_key.sweden_ssh_key.public_key_openssh
+}
+
+# --- Store Private Key in SSM (Paris - Default Provider) ---
+# Allows user to retrieve it via: aws ssm get-parameter --name /wad-law/sweden/ssh_private_key --with-decryption
+resource "aws_ssm_parameter" "sweden_private_key" {
+  name        = "/${var.name_prefix}/sweden/ssh_private_key"
+  description = "SSH Private Key for Sweden Exit Node"
+  type        = "SecureString"
+  value       = tls_private_key.sweden_ssh_key.private_key_pem
 }
 
 # --- VPC & Network ---
 resource "aws_vpc" "sweden_vpc" {
   provider             = aws.sweden
-  cidr_block           = "10.200.0.0/16" # Distinct from Paris (usually 10.0.0.0/16)
+  cidr_block           = "10.200.0.0/16"
   enable_dns_hostnames = true
   enable_dns_support   = true
   tags                 = { Name = "${var.name_prefix}-sweden-vpc" }
@@ -53,7 +69,7 @@ resource "aws_security_group" "sweden_sg" {
     from_port   = 51820
     to_port     = 51820
     protocol    = "udp"
-    cidr_blocks = ["0.0.0.0/0"] # Can be restricted to Paris NAT/EIP if static, but Paris is dynamic
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
@@ -78,8 +94,8 @@ resource "aws_iam_role" "sweden_role" {
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
-      Action    = "sts:AssumeRole"
-      Effect    = "Allow"
+      Action = "sts:AssumeRole"
+      Effect = "Allow"
       Principal = { Service = "ec2.amazonaws.com" }
     }]
   })
@@ -95,7 +111,7 @@ resource "aws_iam_role_policy" "sweden_ssm_policy" {
       {
         Effect   = "Allow"
         Action   = ["ssm:PutParameter", "ssm:GetParameter", "ssm:GetParameters"]
-        Resource = "*" # Restrict scope in production
+        Resource = "*"
       }
     ]
   })
@@ -125,7 +141,7 @@ resource "aws_instance" "sweden_exit_node" {
   instance_type               = "t3.micro"
   subnet_id                   = aws_subnet.sweden_public_subnet.id
   vpc_security_group_ids      = [aws_security_group.sweden_sg.id]
-  key_name                    = var.key_name
+  key_name                    = aws_key_pair.sweden_key_pair.key_name
   iam_instance_profile        = aws_iam_instance_profile.sweden_profile.name
   associate_public_ip_address = true
 
