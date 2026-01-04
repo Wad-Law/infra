@@ -107,15 +107,21 @@ resource "aws_iam_instance_profile" "sweden_profile" {
 }
 
 # --- AMI Lookup (Amazon Linux 2023 in Sweden) ---
-data "aws_ssm_parameter" "al2023_sweden" {
-  provider = aws.sweden
-  name     = "/aws/service/ami-amazon-linux-2023/amd64/standard/recent/image_id"
+data "aws_ami" "sweden_ami" {
+  provider    = aws.sweden
+  most_recent = true
+  owners      = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = ["al2023-ami-2023.*-x86_64"]
+  }
 }
 
 # --- Exit Node Instance ---
 resource "aws_instance" "sweden_exit_node" {
   provider                    = aws.sweden
-  ami                         = data.aws_ssm_parameter.al2023_sweden.value
+  ami                         = data.aws_ami.sweden_ami.id
   instance_type               = "t3.micro"
   subnet_id                   = aws_subnet.sweden_public_subnet.id
   vpc_security_group_ids      = [aws_security_group.sweden_sg.id]
