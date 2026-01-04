@@ -46,4 +46,7 @@ jobs:
           TF_VAR_llm_api_key: ${{ secrets.TF_VAR_llm_api_key }}
           TF_VAR_poly_proxy_address: ${{ secrets.TF_VAR_poly_proxy_address }}
           TF_VAR_poly_private_key: ${{ secrets.TF_VAR_poly_private_key }}
+          TF_VAR_poly_api_key: ${{ secrets.TF_VAR_poly_api_key }}
+          TF_VAR_poly_api_secret: ${{ secrets.TF_VAR_poly_api_secret }}
+          TF_VAR_poly_api_passphrase: ${{ secrets.TF_VAR_poly_api_passphrase }}
         run: terraform plan -input=false
