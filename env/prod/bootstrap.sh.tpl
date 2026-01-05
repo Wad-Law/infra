@@ -38,8 +38,10 @@ echo "/swapfile swap swap defaults 0 0" >> /etc/fstab
 # --- NordVPN Setup ---
 echo "[BOOTSTRAP] Installing NordVPN..."
 # Install NordVPN CLI
-# Pipe yes to handle "Is this ok [y/N]" prompts
-yes | sh <(curl -sSf https://downloads.nordcdn.com/apps/linux/install.sh)
+# Manual RPM install to avoid interactive script issues
+# Pipe yes is flaky, so we use dnf directly
+dnf install -y https://repo.nordvpn.com/yum/nordvpn/centos/noarch/Packages/n/nordvpn-release-1.0.0-1.noarch.rpm || true
+dnf install -y nordvpn
 usermod -aG nordvpn ec2-user || true
 
 echo "[BOOTSTRAP] Configuring NordVPN..."
@@ -60,7 +62,8 @@ sleep 5
 # Login with Token
 # We use || true here to ensure one failure doesn't kill the whole bootstrap
 echo "[BOOTSTRAP] Logging in to NordVPN..."
-nordvpn login --token "$${NORDVPN_TOKEN}" || { echo "NordVPN Login Failed"; }
+# Pipe "no" to handle any "save token?" or similar prompts that default to interactive
+yes no | nordvpn login --token "$${NORDVPN_TOKEN}" || { echo "NordVPN Login Failed"; }
 
 nordvpn set technology nordlynx || true
 
