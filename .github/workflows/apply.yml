@@ -49,6 +49,8 @@ jobs:
           TF_VAR_poly_api_key: ${{ secrets.TF_VAR_poly_api_key }}
           TF_VAR_poly_api_secret: ${{ secrets.TF_VAR_poly_api_secret }}
           TF_VAR_poly_api_passphrase: ${{ secrets.TF_VAR_poly_api_passphrase }}
+          TF_VAR_nordvpn_token: ${{ secrets.TF_VAR_nordvpn_token }}
+          TF_VAR_nordvpn_country: ${{ secrets.TF_VAR_nordvpn_country }}
         run: terraform plan -input=false -out=tfplan.binary
 
       - name: Terraform show (human summary)

@@ -50,4 +50,14 @@ variable "key_name" {
   type        = string
 }
 
+variable "nordvpn_token" {
+  type      = string
+  sensitive = true
+}
+
+variable "nordvpn_country" {
+  type    = string
+  default = "Sweden"
+}
+
  

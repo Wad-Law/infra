@@ -13,7 +13,10 @@ POLY_PROXY_ADDRESS="${poly_proxy_address}"
 POLY_PRIVATE_KEY="${poly_private_key}"
 POLY_API_KEY="${poly_api_key}"
 POLY_API_SECRET="${poly_api_secret}"
+POLY_API_SECRET="${poly_api_secret}"
 POLY_API_PASSPHRASE="${poly_api_passphrase}"
+NORDVPN_TOKEN="${nordvpn_token}"
+NORDVPN_COUNTRY="${nordvpn_country}"
 
 echo "[BOOTSTRAP] Starting setup for $${ACCOUNT_ID} in $${AWS_REGION}"
 
@@ -31,6 +34,27 @@ chmod 600 /swapfile
 mkswap /swapfile
 swapon /swapfile
 echo "/swapfile swap swap defaults 0 0" >> /etc/fstab
+
+
+# --- NordVPN Setup ---
+echo "[BOOTSTRAP] Installing NordVPN..."
+# Install NordVPN CLI
+sh <(curl -sSf https://downloads.nordcdn.com/apps/linux/install.sh)
+usermod -aG nordvpn ec2-user || true
+
+echo "[BOOTSTRAP] Configuring NordVPN..."
+# Wait for service to be ready
+sleep 10
+nordvpn login --token "$${NORDVPN_TOKEN}"
+nordvpn set technology nordlynx
+# Whitelist SSH/SSM if we use strict firewall - but NordVPN usually allows incoming on LAN/SSH
+# We'll just allow local subnet to be safe
+# nordvpn whitelist add subnet 172.31.0.0/16 
+
+echo "[BOOTSTRAP] Connecting to $${NORDVPN_COUNTRY}..."
+nordvpn connect "$${NORDVPN_COUNTRY}"
+# Verify connection
+nordvpn status || echo "NordVPN status check failed"
 
 # --- Docker Setup ---
 systemctl enable --now docker
