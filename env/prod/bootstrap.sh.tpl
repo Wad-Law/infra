@@ -38,21 +38,36 @@ echo "/swapfile swap swap defaults 0 0" >> /etc/fstab
 # --- NordVPN Setup ---
 echo "[BOOTSTRAP] Installing NordVPN..."
 # Install NordVPN CLI
-# Pipe yes to handle "Is this ok [y/N]" prompts
-yes | sh <(curl -sSf https://downloads.nordcdn.com/apps/linux/install.sh)
+# Manual RPM install to avoid interactive script issues
+dnf install -y https://repo.nordvpn.com/yum/nordvpn/centos/noarch/packages/nordvpn-release-1.0.0-1.noarch.rpm || true
+dnf install -y nordvpn
 usermod -aG nordvpn ec2-user || true
 
 echo "[BOOTSTRAP] Configuring NordVPN..."
-# Wait for service to be ready
-sleep 10
-nordvpn login --token "$${NORDVPN_TOKEN}"
-nordvpn set technology nordlynx
-# Whitelist SSH/SSM if we use strict firewall - but NordVPN usually allows incoming on LAN/SSH
-# We'll just allow local subnet to be safe
-# nordvpn whitelist add subnet 172.31.0.0/16 
+# Start NordVPN Service explicitly
+systemctl enable --now nordvpnd
+
+# Wait for NordVPN Daemon socket
+echo "[BOOTSTRAP] Waiting for NordVPN daemon..."
+count=0
+while [ ! -S /run/nordvpn/nordvpn.sock ] && [ $count -lt 30 ]; do
+  sleep 1
+  count=$((count+1))
+done
+
+# Additional sleep for internal initialization
+sleep 5
+
+# Login with Token
+# We use || true here to ensure one failure doesn't kill the whole bootstrap
+echo "[BOOTSTRAP] Logging in to NordVPN..."
+nordvpn login --token "$${NORDVPN_TOKEN}" || { echo "NordVPN Login Failed"; }
+
+nordvpn set technology nordlynx || true
 
 echo "[BOOTSTRAP] Connecting to $${NORDVPN_COUNTRY}..."
-nordvpn connect "$${NORDVPN_COUNTRY}"
+nordvpn connect "$${NORDVPN_COUNTRY}" || { echo "NordVPN Connect Failed"; }
+
 # Verify connection
 nordvpn status || echo "NordVPN status check failed"
 
