@@ -13,7 +13,6 @@ POLY_PROXY_ADDRESS="${poly_proxy_address}"
 POLY_PRIVATE_KEY="${poly_private_key}"
 POLY_API_KEY="${poly_api_key}"
 POLY_API_SECRET="${poly_api_secret}"
-POLY_API_SECRET="${poly_api_secret}"
 POLY_API_PASSPHRASE="${poly_api_passphrase}"
 NORDVPN_TOKEN="${nordvpn_token}"
 NORDVPN_COUNTRY="${nordvpn_country}"
@@ -39,7 +38,8 @@ echo "/swapfile swap swap defaults 0 0" >> /etc/fstab
 # --- NordVPN Setup ---
 echo "[BOOTSTRAP] Installing NordVPN..."
 # Install NordVPN CLI
-sh <(curl -sSf https://downloads.nordcdn.com/apps/linux/install.sh)
+# Pipe yes to handle "Is this ok [y/N]" prompts
+yes | sh <(curl -sSf https://downloads.nordcdn.com/apps/linux/install.sh)
 usermod -aG nordvpn ec2-user || true
 
 echo "[BOOTSTRAP] Configuring NordVPN..."
