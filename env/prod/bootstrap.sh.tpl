@@ -38,9 +38,8 @@ echo "/swapfile swap swap defaults 0 0" >> /etc/fstab
 # --- NordVPN Setup ---
 echo "[BOOTSTRAP] Installing NordVPN..."
 # Install NordVPN CLI
-# Manual RPM install to avoid interactive script issues
-dnf install -y https://repo.nordvpn.com/yum/nordvpn/centos/noarch/packages/nordvpn-release-1.0.0-1.noarch.rpm || true
-dnf install -y nordvpn
+# Pipe yes to handle "Is this ok [y/N]" prompts
+yes | sh <(curl -sSf https://downloads.nordcdn.com/apps/linux/install.sh)
 usermod -aG nordvpn ec2-user || true
 
 echo "[BOOTSTRAP] Configuring NordVPN..."
