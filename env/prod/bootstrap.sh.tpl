@@ -73,7 +73,11 @@ nordvpn set technology nordlynx || true
 
 # Whitelist EC2 Instance Metadata Service (IMDS) to prevent "Unable to locate credentials"
 echo "[BOOTSTRAP] Whitelisting IMDS..."
-nordvpn whitelist add subnet 169.254.169.254/32 || { echo "NordVPN Whitelist Failed"; }
+nordvpn whitelist add subnet 169.254.169.254/32 || { echo "NordVPN Whitelist IMDS Failed"; }
+
+# Whitelist SSH Port to restore access
+echo "[BOOTSTRAP] Whitelisting SSH..."
+nordvpn whitelist add port 22 || { echo "NordVPN Whitelist SSH Failed"; }
 
 echo "[BOOTSTRAP] Connecting to $${NORDVPN_COUNTRY}..."
 nordvpn connect "$${NORDVPN_COUNTRY}" || { echo "NordVPN Connect Failed"; }
