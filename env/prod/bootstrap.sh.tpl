@@ -1,6 +1,9 @@
 #!/bin/bash
 set -euo pipefail
 
+# Fix for tools like NordVPN needing HOME
+export HOME=/root
+
 # Force Refresh: Updated to t3.small
 # --- Variables from Terraform ---
 AWS_REGION="${region}"
