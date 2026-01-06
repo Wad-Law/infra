@@ -70,6 +70,11 @@ yes no | nordvpn login --token "$${NORDVPN_TOKEN}" || { echo "NordVPN Login Fail
 
 nordvpn set technology nordlynx || true
 
+
+# Whitelist EC2 Instance Metadata Service (IMDS) to prevent "Unable to locate credentials"
+echo "[BOOTSTRAP] Whitelisting IMDS..."
+nordvpn whitelist add subnet 169.254.169.254/32 || { echo "NordVPN Whitelist Failed"; }
+
 echo "[BOOTSTRAP] Connecting to $${NORDVPN_COUNTRY}..."
 nordvpn connect "$${NORDVPN_COUNTRY}" || { echo "NordVPN Connect Failed"; }
 
