@@ -69,9 +69,8 @@ echo "[BOOTSTRAP] Logging in to NordVPN..."
 # Pipe "no" to handle any "save token?" or similar prompts that default to interactive
 yes no | nordvpn login --token "$${NORDVPN_TOKEN}" || { echo "NordVPN Login Failed"; }
 
-# Switch to OpenVPN TCP (Required for Obfuscated Servers)
-nordvpn set technology openvpn || true
-nordvpn set protocol tcp || true
+# Switch to NordLynx (Faster, Standard)
+nordvpn set technology nordlynx || true
 
 # Whitelist EC2 Instance Metadata Service (IMDS) to prevent "Unable to locate credentials"
 echo "[BOOTSTRAP] Whitelisting IMDS..."
@@ -81,9 +80,9 @@ nordvpn whitelist add subnet 169.254.169.254/32 || { echo "NordVPN Whitelist IMD
 echo "[BOOTSTRAP] Whitelisting SSH..."
 nordvpn whitelist add port 22 || { echo "NordVPN Whitelist SSH Failed"; }
 
-echo "[BOOTSTRAP] Connecting to Obfuscated Servers in $${NORDVPN_COUNTRY}..."
-# Use Obfuscated Servers group to behave more like a residential user
-nordvpn connect --group Obfuscated_Servers "$${NORDVPN_COUNTRY}" || { echo "NordVPN Connect Failed"; }
+echo "[BOOTSTRAP] Connecting to P2P Servers in $${NORDVPN_COUNTRY}..."
+# Use P2P Group - often cleaner IPs and better performance
+nordvpn connect --group Double_VPN "$${NORDVPN_COUNTRY}" || { echo "NordVPN Connect Failed"; }
 
 # Verify connection
 nordvpn status || echo "NordVPN status check failed"
