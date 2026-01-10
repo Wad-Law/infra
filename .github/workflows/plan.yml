@@ -51,4 +51,5 @@ jobs:
           TF_VAR_poly_api_passphrase: ${{ secrets.TF_VAR_poly_api_passphrase }}
           TF_VAR_nordvpn_token: ${{ secrets.TF_VAR_nordvpn_token }}
           TF_VAR_nordvpn_country: ${{ secrets.TF_VAR_nordvpn_country }}
+          TF_VAR_cloudflared_token: ${{ secrets.TF_VAR_cloudflared_token }}
         run: terraform plan -input=false
