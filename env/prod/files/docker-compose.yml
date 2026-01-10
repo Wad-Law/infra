@@ -8,5 +8,17 @@ services:
     container_name: polymind
     restart: unless-stopped
     env_file: .env
+    ports:
+      - "50051:50051"
+    networks:
+      - polymind_net
+
+  polyops:
+    image: ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/wad-law/polyops:latest
+    container_name: polyops
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "3001:3000"
     networks:
       - polymind_net

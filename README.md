@@ -9,10 +9,12 @@ The infrastructure is designed for high availability, security, and automated de
 ```mermaid
 graph TD
     User["User/GitHub Actions"] -->|Terraform Apply| AWS["AWS Cloud"]
+    iOS["iOS App (PolyUI)"] -->|REST (Port 3001)| PolyOps
     subgraph cloud ["AWS VPC"]
         subgraph public ["Public Subnet"]
             subgraph instance ["EC2 Instance (t3.medium)"]
                 Polymind["Polymind Container"]
+                PolyOps["PolyOps Container"]
                 Obs["Observability Stack<br/>(Prometheus, Grafana, ELK)"]
             end
             SG_EC2["Security Group: EC2"]
@@ -23,6 +25,7 @@ graph TD
         end
     end
     
+    PolyOps -->|gRPC (Localhost:50051)| Polymind
     Polymind -->|Connects| RDS
     Obs -->|Scrapes| Polymind
     instance -->|Pulls Image| ECR["Elastic Container Registry"]
@@ -33,12 +36,15 @@ graph TD
 ### Key Components
 
 *   **Compute**: 
-    *   **EC2 (t3.small)**: Hosts the `polymind` application container.
+    *   **EC2 (t3.medium)**: Hosts the `polymind` and `polyops` containers.
     *   **Auto Scaling Group (ASG)**: Ensures exactly one instance is running at all times (self-healing).
     *   **Launch Template**: Defines the instance configuration (AMI, Instance Type, IAM Profile, User Data).
 *   **Storage & Config**:
     *   **S3 Config Bucket**: centralized storage for configuration files (Docker Compose, Prometheus, Grafana Dashboards) to bypass User Data size limits.
     *   **Security Secrets**: Secrets (`DB_PASSWORD`, `LLM_API_KEY`) are passed from GitHub Secrets to Terraform to the instance via secure environment variables.
+    *   **PolyOps**:
+        *   **Container**: `polyops` control plane service.
+        *   **Port**: Exposed on port `3001` (Rest API for iOS App).
 *   **Database**:
     *   **Amazon RDS (PostgreSQL 16)**: Managed relational database for persistent storage (Events, Signals, Orders, Positions).
     *   **Storage**: gp3 EBS volumes.
