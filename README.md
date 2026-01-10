@@ -9,7 +9,7 @@ The infrastructure is designed for high availability, security, and automated de
 ```mermaid
 graph TD
     User["User/GitHub Actions"] -->|Terraform Apply| AWS["AWS Cloud"]
-    iOS["iOS App (PolyUI)"] -->|REST (Port 3001)| PolyOps
+    
     subgraph cloud ["AWS VPC"]
         subgraph public ["Public Subnet"]
             subgraph instance ["EC2 Instance (t3.medium)"]
@@ -24,7 +24,18 @@ graph TD
             SG_RDS["Security Group: RDS"]
         end
     end
+
+    iOS["iOS App (PolyUI)"] -->|HTTPS| Cloudflare["Cloudflare Edge"]
+    Cloudflare -->|Tunnel| Cloudflared["Cloudflared (Tunnel)"]
     
+    subgraph instance ["EC2 Instance (t3.medium)"]
+        Polymind["Polymind Container"]
+        PolyOps["PolyOps Container"]
+        Cloudflared
+        Obs["Observability Stack<br/>(Prometheus, Grafana, ELK)"]
+    end
+
+    Cloudflared -->|Localhost:3001| PolyOps
     PolyOps -->|gRPC (Localhost:50051)| Polymind
     Polymind -->|Connects| RDS
     Obs -->|Scrapes| Polymind
@@ -42,14 +53,13 @@ graph TD
 *   **Storage & Config**:
     *   **S3 Config Bucket**: centralized storage for configuration files (Docker Compose, Prometheus, Grafana Dashboards) to bypass User Data size limits.
     *   **Security Secrets**: Secrets (`DB_PASSWORD`, `LLM_API_KEY`) are passed from GitHub Secrets to Terraform to the instance via secure environment variables.
-    *   **PolyOps**:
-        *   **Container**: `polyops` control plane service.
-        *   **Port**: Exposed on port `3001` (Rest API for iOS App).
 *   **Database**:
     *   **Amazon RDS (PostgreSQL 16)**: Managed relational database for persistent storage (Events, Signals, Orders, Positions).
     *   **Storage**: gp3 EBS volumes.
 *   **Security**:
     *   **IAM Roles**: Least-privilege roles for the EC2 instance (ECR access, SSM access, CloudWatch logs).
+    *   **External Access**:
+        *   **Cloudflare Tunnel**: Securely exposes the `PolyOps` API to the internet without opening inbound ports.
     *   **Security Groups**: 
         *   `ec2-sg`: Allows outbound traffic and necessary inbound (e.g., SSH if configured).
         *   `rds-sg`: Restricts database access to the EC2 security group (and temporarily public for dev testing).
@@ -77,6 +87,7 @@ graph TD
 2.  **AWS CLI**: Configured with appropriate credentials (`~/.aws/credentials`).
 3.  **S3 Backend**: An S3 bucket for Terraform state (configured in `backend.hcl`).
 4.  **AWS Key Pair**: An existing EC2 Key Pair (create in AWS Console) for SSH access.
+5.  **Cloudflare Tunnel Token**: A token from the Cloudflare Zero Trust dashboard.
 
 ### Steps to Deploy
 
@@ -89,13 +100,23 @@ graph TD
 2.  **Plan**:
     Review the changes before applying.
     ```bash
-    terraform plan -var="db_username=admin" -var="db_password=securepass" -var="llm_api_key=sk-..." -var="key_name=my-key-pair"
+    terraform plan \
+      -var="db_username=admin" \
+      -var="db_password=securepass" \
+      -var="llm_api_key=sk-..." \
+      -var="key_name=my-key-pair" \
+      -var="cloudflared_token=eyJh..."
     ```
 
 3.  **Apply**:
     Provision the resources.
     ```bash
-    terraform apply -var="db_username=admin" -var="db_password=securepass" -var="llm_api_key=sk-..." -var="key_name=my-key-pair"
+    terraform apply \
+      -var="db_username=admin" \
+      -var="db_password=securepass" \
+      -var="llm_api_key=sk-..." \
+      -var="key_name=my-key-pair" \
+      -var="cloudflared_token=eyJh..."
     ```
 
 ### Bootstrapping

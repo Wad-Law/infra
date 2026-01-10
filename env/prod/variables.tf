@@ -60,4 +60,9 @@ variable "nordvpn_country" {
   default = "Sweden"
 }
 
+variable "cloudflared_token" {
+  type      = string
+  sensitive = true
+}
+
  

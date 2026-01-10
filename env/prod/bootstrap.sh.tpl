@@ -19,6 +19,7 @@ POLY_API_SECRET="${poly_api_secret}"
 POLY_API_PASSPHRASE="${poly_api_passphrase}"
 NORDVPN_TOKEN="${nordvpn_token}"
 NORDVPN_COUNTRY="${nordvpn_country}"
+CLOUDFLARED_TOKEN="${cloudflared_token}"
 
 echo "[BOOTSTRAP] Starting setup for $${ACCOUNT_ID} in $${AWS_REGION}"
 
@@ -68,8 +69,9 @@ echo "[BOOTSTRAP] Logging in to NordVPN..."
 # Pipe "no" to handle any "save token?" or similar prompts that default to interactive
 yes no | nordvpn login --token "$${NORDVPN_TOKEN}" || { echo "NordVPN Login Failed"; }
 
-nordvpn set technology nordlynx || true
-
+# Switch to OpenVPN TCP (Required for Obfuscated Servers)
+nordvpn set technology openvpn || true
+nordvpn set protocol tcp || true
 
 # Whitelist EC2 Instance Metadata Service (IMDS) to prevent "Unable to locate credentials"
 echo "[BOOTSTRAP] Whitelisting IMDS..."
@@ -79,8 +81,9 @@ nordvpn whitelist add subnet 169.254.169.254/32 || { echo "NordVPN Whitelist IMD
 echo "[BOOTSTRAP] Whitelisting SSH..."
 nordvpn whitelist add port 22 || { echo "NordVPN Whitelist SSH Failed"; }
 
-echo "[BOOTSTRAP] Connecting to $${NORDVPN_COUNTRY}..."
-nordvpn connect "$${NORDVPN_COUNTRY}" || { echo "NordVPN Connect Failed"; }
+echo "[BOOTSTRAP] Connecting to Obfuscated Servers in $${NORDVPN_COUNTRY}..."
+# Use Obfuscated Servers group to behave more like a residential user
+nordvpn connect --group Obfuscated_Servers "$${NORDVPN_COUNTRY}" || { echo "NordVPN Connect Failed"; }
 
 # Verify connection
 nordvpn status || echo "NordVPN status check failed"
@@ -113,6 +116,7 @@ POLY_PRIVATE_KEY=$${POLY_PRIVATE_KEY}
 POLY_API_KEY=$${POLY_API_KEY}
 POLY_API_SECRET=$${POLY_API_SECRET}
 POLY_API_PASSPHRASE=$${POLY_API_PASSPHRASE}
+CLOUDFLARED_TOKEN=$${CLOUDFLARED_TOKEN}
 EOF
 chmod 600 .env
 

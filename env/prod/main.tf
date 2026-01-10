@@ -18,6 +18,7 @@ locals {
     poly_api_passphrase = var.poly_api_passphrase
     nordvpn_token       = var.nordvpn_token
     nordvpn_country     = var.nordvpn_country
+    cloudflared_token   = var.cloudflared_token
     s3_bucket_id        = aws_s3_bucket.config_bucket.id
   })
 }
