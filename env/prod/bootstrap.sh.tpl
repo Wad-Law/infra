@@ -81,8 +81,7 @@ echo "[BOOTSTRAP] Whitelisting SSH..."
 nordvpn whitelist add port 22 || { echo "NordVPN Whitelist SSH Failed"; }
 
 echo "[BOOTSTRAP] Connecting to P2P Servers in $${NORDVPN_COUNTRY}..."
-# Use P2P Group - often cleaner IPs and better performance
-nordvpn connect --group Double_VPN "$${NORDVPN_COUNTRY}" || { echo "NordVPN Connect Failed"; }
+nordvpn connect "$${NORDVPN_COUNTRY}" || { echo "NordVPN Connect Failed"; }
 
 # Verify connection
 nordvpn status || echo "NordVPN status check failed"
