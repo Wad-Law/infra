@@ -580,13 +580,13 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "histogram_quantile(0.99, sum by (le, table, op) (rate(database_query_duration_seconds_bucket[$__rate_interval])))",
-          "legendFormat": "{{table}} - {{op}} (P99)",
+          "expr": "sum by (table, op) (rate(database_query_duration_seconds_sum[$__rate_interval])) / sum by (table, op) (rate(database_query_duration_seconds_count[$__rate_interval]))",
+          "legendFormat": "{{table}} - {{op}} (Avg)",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Database Query Duration (P99)",
+      "title": "Database Query Duration (Avg)",
       "type": "timeseries"
     },
     {
@@ -1382,13 +1382,13 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "histogram_quantile(0.99, sum by (le) (rate(discovery_fetch_duration_seconds_bucket[$__rate_interval])))",
-          "legendFormat": "P99",
+          "expr": "rate(discovery_fetch_duration_seconds_sum[$__rate_interval]) / rate(discovery_fetch_duration_seconds_count[$__rate_interval])",
+          "legendFormat": "Avg Duration",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Discovery Fetch Duration (P99)",
+      "title": "Discovery Fetch Duration (Avg)",
       "type": "timeseries"
     },
     {
@@ -1468,7 +1468,7 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 8,
+        "w": 6,
         "x": 0,
         "y": 53
       },
@@ -1563,8 +1563,8 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 8,
-        "x": 8,
+        "w": 6,
+        "x": 6,
         "y": 53
       },
       "id": 25,
@@ -1658,8 +1658,8 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 8,
-        "x": 16,
+        "w": 6,
+        "x": 12,
         "y": 53
       },
       "id": 26,
@@ -1687,6 +1687,101 @@
         }
       ],
       "title": "Position Reconciliations / Sec",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 18,
+        "y": 53
+      },
+      "id": 60,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "rate(execution_orders_duplicate_total[$__rate_interval])",
+          "legendFormat": "Duplicates",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Duplicate Orders / Sec",
       "type": "timeseries"
     },
     {
@@ -1883,13 +1978,13 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "histogram_quantile(0.99, sum by (le) (rate(marketdata_fetch_duration_seconds_bucket[$__rate_interval])))",
-          "legendFormat": "P99",
+          "expr": "rate(marketdata_fetch_duration_seconds_sum[$__rate_interval]) / rate(marketdata_fetch_duration_seconds_count[$__rate_interval])",
+          "legendFormat": "Avg Duration",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Market Data Fetch Duration (P99)",
+      "title": "Market Data Fetch Duration (Avg)",
       "type": "timeseries"
     },
     {
@@ -3797,13 +3892,13 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "histogram_quantile(0.99, sum by (le) (rate(rss_fetch_duration_seconds_bucket[$__rate_interval])))",
-          "legendFormat": "P99",
+          "expr": "rate(rss_fetch_duration_seconds_sum[$__rate_interval]) / rate(rss_fetch_duration_seconds_count[$__rate_interval])",
+          "legendFormat": "Avg Duration",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "RSS Fetch Duration (P99)",
+      "title": "RSS Fetch Duration (Avg)",
       "type": "timeseries"
     },
     {
