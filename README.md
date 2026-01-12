@@ -35,8 +35,8 @@ graph TD
         Obs["Observability Stack<br/>(Prometheus, Grafana, ELK)"]
     end
 
-    Cloudflared -->|Localhost:3001| PolyOps
-    PolyOps -->|gRPC (Localhost:50051)| Polymind
+    Cloudflared -->|"Localhost:3001"| PolyOps
+    PolyOps -->|"gRPC (Localhost:50051)"| Polymind
     Polymind -->|Connects| RDS
     Obs -->|Scrapes| Polymind
     instance -->|Pulls Image| ECR["Elastic Container Registry"]
